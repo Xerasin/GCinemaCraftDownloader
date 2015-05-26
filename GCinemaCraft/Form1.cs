@@ -917,7 +917,7 @@ namespace GCinemaCraft
                     if (e.CurrentValue != CheckState.Checked)
                     {
                         fileDialogOpen.Enabled = true;
-                        selected = cblMod_CheckedItems_Count;
+                        selected = e.Index;
                         cLauncher.cMod.Index = index;
                         cPath.Dialog = cLauncher.cMod.InstallPath;
                         fileDialogText.Text = cPath.Dialog;
@@ -940,10 +940,11 @@ namespace GCinemaCraft
         {
             if (selected != -1)
             {
-                cLauncher.cMod.Index = selected;
+                
                 string newPath = this.getDialogPath("Select Install Location");
                 if(!string.IsNullOrWhiteSpace(newPath))
                 {
+                    cLauncher.cMod.Index = selected;
                     cPath.Dialog = newPath;
                     fileDialogText.Text = cPath.Dialog;
                     cLauncher.cMod.InstallPath = cPath.Dialog;
