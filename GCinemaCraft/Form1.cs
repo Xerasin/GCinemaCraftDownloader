@@ -22,7 +22,7 @@ namespace GCinemaCraft
     {
         Stopwatch sw;
         WebClient webClient;
-        private int selected;
+        private int selected = -1;
         public delegate void DownloadFinished(string path);
         private ArrayList xhashDownloadList = new ArrayList();
         private ArrayList xhashToDelete = new ArrayList();
@@ -244,12 +244,13 @@ namespace GCinemaCraft
             shouldShowDownloadComplted = true;
             Label lblConsole = (Label)getControl(this.lblConsole);
             Button btnBeginOperation = (Button)getControl(this.btnBeginOperation);
+            Button fileOpenButton = (Button)getControl(this.fileDialogOpen);
             CheckBox cbClearDownloaded = (CheckBox)getControl(this.cbClearDownloaded);
             CheckBox cbClearUncompressed = (CheckBox)getControl(this.cbClearUncompressed);
             ProgressBar prgWeb = (ProgressBar)getControl(this.prgWeb);
             ProgressBar xDeltaBar = (ProgressBar)getControl(this.xDeltaBar);
             xDeltaBar.Visible = false;
-
+            fileOpenButton.Enabled = true;
 
             cLauncher.Index = 0;
             cLauncher.cMod.Index = -1;
@@ -796,12 +797,15 @@ namespace GCinemaCraft
 
         private void btnBeginOperation_Click(object sender, EventArgs e)
         {
+            if(string.IsNullOrEmpty(fileDialogText.Text) || string.IsNullOrEmpty(cPath.Dialog)) return;
             Label lblConsole = (Label)getControl(this.lblConsole);
             Button btnBeginOperation = (Button)getControl(this.btnBeginOperation);
             ListBox lbLauncher = (ListBox)getControl(this.lbLauncher);
-            
+            Button fileDialogOpen = (Button)getControl(this.fileDialogOpen);
+
             if (btnBeginOperation.Text.Equals("Begin Operation", StringComparison.OrdinalIgnoreCase))
             {
+                fileDialogOpen.Enabled = false;
                 string dialogDescription = "";
 
                 lblConsole.Text = "Initializing handler...";
@@ -828,7 +832,7 @@ namespace GCinemaCraft
                     return;
                 }
             }
-            
+            fileDialogOpen.Enabled = true;
             stopOperations();
         }
         
@@ -912,6 +916,7 @@ namespace GCinemaCraft
                 {
                     if (e.CurrentValue != CheckState.Checked)
                     {
+                        fileDialogOpen.Enabled = true;
                         selected = cblMod_CheckedItems_Count;
                         cLauncher.cMod.Index = index;
                         cPath.Dialog = cLauncher.cMod.InstallPath;
@@ -921,6 +926,8 @@ namespace GCinemaCraft
                     }
                     else
                     {
+                        selected = -1;
+                        fileDialogOpen.Enabled = false;
                         cPath.Dialog = "";
                         fileDialogText.Text = cPath.Dialog;
                     }
@@ -931,11 +938,18 @@ namespace GCinemaCraft
 
         private void fileDialogOpen_Click(object sender, EventArgs e)
         {
-            cLauncher.cMod.Index = selected;
-            cPath.Dialog = this.getDialogPath("Select Install Location");
-            fileDialogText.Text = cPath.Dialog;
-            cLauncher.cMod.InstallPath = cPath.Dialog;
-            cLauncher.cMod.Index = -1;
+            if (selected != -1)
+            {
+                cLauncher.cMod.Index = selected;
+                string newPath = this.getDialogPath("Select Install Location");
+                if(!string.IsNullOrWhiteSpace(newPath))
+                {
+                    cPath.Dialog = newPath;
+                    fileDialogText.Text = cPath.Dialog;
+                    cLauncher.cMod.InstallPath = cPath.Dialog;
+                    cLauncher.cMod.Index = -1;
+                }
+            }
         }
     }
 }

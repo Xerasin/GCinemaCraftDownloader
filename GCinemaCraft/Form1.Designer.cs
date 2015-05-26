@@ -202,6 +202,7 @@
             // 
             // fileDialogOpen
             // 
+            this.fileDialogOpen.Enabled = false;
             this.fileDialogOpen.Location = new System.Drawing.Point(132, 64);
             this.fileDialogOpen.Name = "fileDialogOpen";
             this.fileDialogOpen.Size = new System.Drawing.Size(30, 21);
