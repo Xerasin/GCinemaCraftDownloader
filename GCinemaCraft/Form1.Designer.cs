@@ -42,6 +42,8 @@
             this.cbFailedDownload = new System.Windows.Forms.CheckBox();
             this.cbClearUncompressed = new System.Windows.Forms.CheckBox();
             this.grpOperations = new System.Windows.Forms.GroupBox();
+            this.fileDialogOpen = new System.Windows.Forms.Button();
+            this.fileDialogText = new System.Windows.Forms.TextBox();
             this.btnBeginOperation = new System.Windows.Forms.Button();
             this.cbMod = new System.Windows.Forms.CheckBox();
             this.cbLauncher = new System.Windows.Forms.CheckBox();
@@ -50,6 +52,8 @@
             this.lbLauncher = new System.Windows.Forms.ListBox();
             this.cblMod = new System.Windows.Forms.CheckedListBox();
             this.grpItems = new System.Windows.Forms.GroupBox();
+            this.xDeltaBar = new System.Windows.Forms.ProgressBar();
+            this.fileProgresText = new System.Windows.Forms.Label();
             this.grpInfo.SuspendLayout();
             this.grpOptions.SuspendLayout();
             this.grpOperations.SuspendLayout();
@@ -58,7 +62,7 @@
             // 
             // prgWeb
             // 
-            this.prgWeb.Location = new System.Drawing.Point(12, 403);
+            this.prgWeb.Location = new System.Drawing.Point(6, 425);
             this.prgWeb.Name = "prgWeb";
             this.prgWeb.Size = new System.Drawing.Size(460, 23);
             this.prgWeb.TabIndex = 1;
@@ -78,7 +82,7 @@
             this.lblConsole.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblConsole.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblConsole.Location = new System.Drawing.Point(12, 429);
+            this.lblConsole.Location = new System.Drawing.Point(6, 480);
             this.lblConsole.Name = "lblConsole";
             this.lblConsole.Size = new System.Drawing.Size(460, 23);
             this.lblConsole.TabIndex = 3;
@@ -107,7 +111,7 @@
             // lblMessage
             // 
             this.lblMessage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblMessage.Location = new System.Drawing.Point(12, 315);
+            this.lblMessage.Location = new System.Drawing.Point(6, 337);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(460, 85);
             this.lblMessage.TabIndex = 8;
@@ -140,7 +144,7 @@
             this.grpOptions.Controls.Add(this.cbFailedDownload);
             this.grpOptions.Controls.Add(this.cbClearUncompressed);
             this.grpOptions.Controls.Add(this.cbClearDownloaded);
-            this.grpOptions.Location = new System.Drawing.Point(12, 195);
+            this.grpOptions.Location = new System.Drawing.Point(6, 217);
             this.grpOptions.Name = "grpOptions";
             this.grpOptions.Size = new System.Drawing.Size(460, 117);
             this.grpOptions.TabIndex = 11;
@@ -182,6 +186,8 @@
             // 
             // grpOperations
             // 
+            this.grpOperations.Controls.Add(this.fileDialogOpen);
+            this.grpOperations.Controls.Add(this.fileDialogText);
             this.grpOperations.Controls.Add(this.btnBeginOperation);
             this.grpOperations.Controls.Add(this.cbMod);
             this.grpOperations.Controls.Add(this.cbLauncher);
@@ -189,15 +195,33 @@
             this.grpOperations.Controls.Add(this.rbUpdate);
             this.grpOperations.Location = new System.Drawing.Point(12, 95);
             this.grpOperations.Name = "grpOperations";
-            this.grpOperations.Size = new System.Drawing.Size(168, 94);
+            this.grpOperations.Size = new System.Drawing.Size(168, 116);
             this.grpOperations.TabIndex = 12;
             this.grpOperations.TabStop = false;
             this.grpOperations.Text = "Operations";
             // 
+            // fileDialogOpen
+            // 
+            this.fileDialogOpen.Location = new System.Drawing.Point(132, 64);
+            this.fileDialogOpen.Name = "fileDialogOpen";
+            this.fileDialogOpen.Size = new System.Drawing.Size(30, 21);
+            this.fileDialogOpen.TabIndex = 17;
+            this.fileDialogOpen.Text = "...";
+            this.fileDialogOpen.UseVisualStyleBackColor = true;
+            this.fileDialogOpen.Click += new System.EventHandler(this.fileDialogOpen_Click);
+            // 
+            // fileDialogText
+            // 
+            this.fileDialogText.Location = new System.Drawing.Point(6, 65);
+            this.fileDialogText.Name = "fileDialogText";
+            this.fileDialogText.ReadOnly = true;
+            this.fileDialogText.Size = new System.Drawing.Size(126, 20);
+            this.fileDialogText.TabIndex = 15;
+            // 
             // btnBeginOperation
             // 
             this.btnBeginOperation.Enabled = false;
-            this.btnBeginOperation.Location = new System.Drawing.Point(6, 65);
+            this.btnBeginOperation.Location = new System.Drawing.Point(6, 87);
             this.btnBeginOperation.Name = "btnBeginOperation";
             this.btnBeginOperation.Size = new System.Drawing.Size(156, 23);
             this.btnBeginOperation.TabIndex = 14;
@@ -256,7 +280,7 @@
             this.lbLauncher.IntegralHeight = false;
             this.lbLauncher.Location = new System.Drawing.Point(6, 19);
             this.lbLauncher.Name = "lbLauncher";
-            this.lbLauncher.Size = new System.Drawing.Size(134, 152);
+            this.lbLauncher.Size = new System.Drawing.Size(134, 174);
             this.lbLauncher.TabIndex = 6;
             this.lbLauncher.SelectedValueChanged += new System.EventHandler(this.lbLauncher_SelectedValueChanged);
             // 
@@ -268,7 +292,7 @@
             this.cblMod.IntegralHeight = false;
             this.cblMod.Location = new System.Drawing.Point(146, 19);
             this.cblMod.Name = "cblMod";
-            this.cblMod.Size = new System.Drawing.Size(134, 152);
+            this.cblMod.Size = new System.Drawing.Size(134, 174);
             this.cblMod.TabIndex = 14;
             this.cblMod.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cblMod_ItemCheck);
             // 
@@ -278,16 +302,37 @@
             this.grpItems.Controls.Add(this.lbLauncher);
             this.grpItems.Location = new System.Drawing.Point(186, 12);
             this.grpItems.Name = "grpItems";
-            this.grpItems.Size = new System.Drawing.Size(286, 177);
+            this.grpItems.Size = new System.Drawing.Size(286, 199);
             this.grpItems.TabIndex = 15;
             this.grpItems.TabStop = false;
             this.grpItems.Text = "Items";
+            // 
+            // xDeltaBar
+            // 
+            this.xDeltaBar.Location = new System.Drawing.Point(6, 454);
+            this.xDeltaBar.Name = "xDeltaBar";
+            this.xDeltaBar.Size = new System.Drawing.Size(460, 23);
+            this.xDeltaBar.TabIndex = 16;
+            this.xDeltaBar.Visible = false;
+            // 
+            // fileProgresText
+            // 
+            this.fileProgresText.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.fileProgresText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.fileProgresText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fileProgresText.Location = new System.Drawing.Point(6, 509);
+            this.fileProgresText.Name = "fileProgresText";
+            this.fileProgresText.Size = new System.Drawing.Size(460, 23);
+            this.fileProgresText.TabIndex = 17;
+            this.fileProgresText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // formGCinemaCraft
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 461);
+            this.ClientSize = new System.Drawing.Size(484, 541);
+            this.Controls.Add(this.fileProgresText);
+            this.Controls.Add(this.xDeltaBar);
             this.Controls.Add(this.grpItems);
             this.Controls.Add(this.grpOperations);
             this.Controls.Add(this.grpOptions);
@@ -332,6 +377,10 @@
         private System.Windows.Forms.CheckedListBox cblMod;
         private System.Windows.Forms.GroupBox grpItems;
         private System.Windows.Forms.CheckBox cbFailedExtraction;
+        private System.Windows.Forms.Button fileDialogOpen;
+        private System.Windows.Forms.TextBox fileDialogText;
+        private System.Windows.Forms.ProgressBar xDeltaBar;
+        private System.Windows.Forms.Label fileProgresText;
     }
 }
 

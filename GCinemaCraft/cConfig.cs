@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace GCinemaCraft
 {
@@ -56,6 +57,26 @@ namespace GCinemaCraft
             public static class cUpdate
             {
                 public static JArray Filter { get { return (JArray)Mod[indexMod]["update"]["filter"]; } }
+            }
+            public static string InstallPath
+            {
+                get
+                {
+                    return (string)cLauncher.cMod.Mod[cLauncher.cMod.indexMod][(object)"lastInstall"];
+                }
+                set
+                {
+                    cLauncher.cMod.Mod[cLauncher.cMod.indexMod][(object)"lastInstall"] = value;
+                    cOperation.saveConfig();
+
+                }
+            }
+            public static string Type
+            {
+                get
+                {
+                    return (string)cLauncher.cMod.Mod[cLauncher.cMod.indexMod][(object)"type"];
+                }
             }
         }
     }
@@ -153,6 +174,19 @@ namespace GCinemaCraft
 
         public static JObject Config { get { return config; } set { config = value; } }
         public static int Type { get { return type; } set { type = value; } }
+
+        public static void saveConfig()
+        {
+            using (FileStream fs = File.Open(cPath.Config, FileMode.Create))
+            using (StreamWriter sw = new StreamWriter(fs))
+            using (JsonWriter jw = new JsonTextWriter(sw))
+            {
+                jw.Formatting = Formatting.Indented;
+
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(jw, config);
+            }
+        }
     }
     
     public static class cPath
