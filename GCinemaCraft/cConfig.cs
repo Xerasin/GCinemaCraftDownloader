@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Reflection;
 
 namespace GCinemaCraft
 {
@@ -41,10 +42,6 @@ namespace GCinemaCraft
         public static JToken Link { get { return Launcher[indexLauncher]["link"]; } }
         public static JToken FileName { get { return Launcher[indexLauncher]["filename"]; } }
         public static JToken Executable { get { return Launcher[indexLauncher]["executable"]; } }
-        public static class cUpdate
-        {
-            public static JArray Filter { get { return (JArray)Launcher[indexLauncher]["update"]["filter"]; } }
-        }
         public static class cMod
         {
             static int indexMod = -1;
@@ -54,10 +51,6 @@ namespace GCinemaCraft
             public static JToken Link { get { return Mod[indexMod]["link"]; } }
             public static JToken FileName { get { return Mod[indexMod]["filename"]; } }
             public static JToken Path { get { return Mod[indexMod]["path"]; } }
-            public static class cUpdate
-            {
-                public static JArray Filter { get { return (JArray)Mod[indexMod]["update"]["filter"]; } }
-            }
             public static string InstallPath
             {
                 get
@@ -103,30 +96,15 @@ namespace GCinemaCraft
         {
             get
             {
-                string msgInstructions = "" +
-                "\a\tDownloading:\n" +
-                "1.\tClick the 'Download' button, choose which items you want to download and click on 'Begin Operation'\n" +
-                "2.\tSelect the location where you wish to install the selected Minecraft Launcher and its Mods\n" +
-                "3.\tOnce the files are downloaded and uncompressed, the program will automatically load the Launcher to set it up\n" +
-                "3.1.\r\tMultiMC:\n" +
-                "3.2.\tSelect which JAVA version you want to use (Recommended: 64-bits)\n" +
-                "3.2.1.\r\tMineCinema:\n" +
-                "3.2.1.2.\tRight-click on 'MineCinema', select 'Edit Instance'\n" +
-                "3.2.1.3.\tSelect the 'Version' option on the list and click on 'Install Forge'\n" +
-                "3.2.1.4.\tAfter the application finishes fetching all the available Forge versions, choose which version you want to use (Recommended: Latest version or try different versions if problems occur) and click OK\n" +
-                "3.2.1.5.\tSelect the 'Settings' option on the list.\n" +
-                "3.2.1.6.\r\tSettings:\n" +
-                "3.2.1.6.1.\tThe 'Maximum Memory Allocation' must be higher than '2048 MB'\n" +
-                "3.2.1.6.2.\tMake sure the 'PermGen' value is higher than '128 MB'\n" +
-                "3.2.1.7.\r\tServer:\n" +
-                "3.2.1.7.1.\tIP: join.gcinema.net:25565\n" +
-                "3.2.1.7.2.\tRemember to sync your Minecraft account on http://www.gcinema.net/forums/\n" +
-                "\n\n" +
-                "\a\tUpdating:\n" +
-                "1.\tSelect the 'Update' radio button, choose which items you want to update and click on 'Begin Operation'\n" +
-                "2.\tSelect the main folder where selected Launcher files are located\n" +
-                "3.\tThe program will automatically update any necessary file\n";
-                return msgInstructions;
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "GCinemaCraft.instructions.txt";
+
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string result = reader.ReadToEnd();
+                    return result;
+                }
             }
         }
         public static string Random

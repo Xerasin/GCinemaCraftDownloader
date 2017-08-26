@@ -69,6 +69,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cConfig.cs" />
+    <Compile Include="ProgressBar2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProgressBar2.Designer.cs">
+      <DependentUpon>ProgressBar2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\GCinemaCraft.ico" />
+    <EmbeddedResource Include="instructions.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

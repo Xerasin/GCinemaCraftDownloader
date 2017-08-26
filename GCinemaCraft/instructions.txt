@@ -1,0 +1,10 @@
+﻿To Download: 
+	- Select MultiMC then check the pack you want to download
+	- Check Launcher if you wish to install the launcher 
+	  (required if you don't have it already)
+	- Click the ... if you wish to change installation directory
+	- Click Download
+To Update:
+	- Select MultiMC then check the pack you want to update
+	- Check Update instead of Download
+	- Click Download button

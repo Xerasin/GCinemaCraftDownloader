@@ -26,14 +26,14 @@ namespace GCinemaCraft
         public delegate void DownloadFinished(string path);
         private ArrayList xhashDownloadList = new ArrayList();
         private ArrayList xhashToDelete = new ArrayList();
-        private int xhashCount = 0;
+        private long xhashCount = 0;
         delegate Control getControlCallback(Control control);
         private bool shouldShowDownloadComplted { get; set; }
         public formGCinemaCraft()
         {
             InitializeComponent();
             shouldShowDownloadComplted = true;
-            lblMessage.Text = cMessage.Random;
+            //lblMessage.Text = cMessage.Random;
             
             try
             {
@@ -161,6 +161,7 @@ namespace GCinemaCraft
                     string file = pathFile.Replace(pathFile.Remove(pathFile.LastIndexOf("\\") + 1), "");
 
                     sw.Start();
+                    webClient.Proxy = null;
                     webClient.DownloadFileAsync(address, pathFile);
 
                     webClient.DownloadFileCompleted += (AsyncCompletedEventHandler)((sender, e) =>
@@ -245,11 +246,15 @@ namespace GCinemaCraft
             Label lblConsole = (Label)getControl(this.lblConsole);
             Button btnBeginOperation = (Button)getControl(this.btnBeginOperation);
             Button fileOpenButton = (Button)getControl(this.fileDialogOpen);
-            CheckBox cbClearDownloaded = (CheckBox)getControl(this.cbClearDownloaded);
-            CheckBox cbClearUncompressed = (CheckBox)getControl(this.cbClearUncompressed);
-            ProgressBar prgWeb = (ProgressBar)getControl(this.prgWeb);
-            ProgressBar xDeltaBar = (ProgressBar)getControl(this.xDeltaBar);
+            //CheckBox cbClearDownloaded = (CheckBox)getControl(this.cbClearDownloaded);
+            //CheckBox cbClearUncompressed = (CheckBox)getControl(this.cbClearUncompressed);
+            ProgressBar2 prgWeb = (ProgressBar2)getControl(this.progressBar);
+            ProgressBar2 xDeltaBar = (ProgressBar2)getControl(this.xDeltaBar);
             xDeltaBar.Visible = false;
+            xDeltaBar.CustomText = "";
+            prgWeb.Visible = false;
+            prgWeb.CustomText = "";
+            lblConsole.Visible = false;
             fileOpenButton.Enabled = true;
 
             cLauncher.Index = 0;
@@ -269,7 +274,7 @@ namespace GCinemaCraft
                 webClient.CancelAsync();
             }
 
-            if (cbClearDownloaded.Checked)
+            /*if (cbClearDownloaded.Checked)
             {
                 clearDirectory(cPath.Downloaded);
             }
@@ -277,7 +282,7 @@ namespace GCinemaCraft
             if (cbClearUncompressed.Checked)
             {
                 clearDirectory(cPath.Uncompressed);
-            }
+            }*/
 
             prgWeb.Value = 0;
             lblConsole.Text = "";
@@ -314,13 +319,13 @@ namespace GCinemaCraft
             }
             catch (Exception e)
             {
-                if (cbFailedExtraction.Checked)
+                /*if (cbFailedExtraction.Checked)
                 {
                     if (e is InvalidDataException)
                     {
                         File.Delete(extractFrom);
                     }
-                }
+                }*/
                 
                 throw e;
             }
@@ -384,9 +389,9 @@ namespace GCinemaCraft
                     {
                         if (!this.downloadFile(link, downloadedFileName))
                         {
-                            lblConsole.Text = fileName + " - Uncompressing";
+                            lblConsole.Text = fileName;
                             lblConsole.Refresh();
-                            this.handleXDelta(downloadedFileName, false);
+                            this.handleXDelta(downloadedFileName, false, fileName);
                             cOperation.Type = 3;
                             handlerOperation();
                             return;
@@ -477,7 +482,6 @@ namespace GCinemaCraft
                         dialog = cPath.Dialog;
                         link = (string)cLauncher.Link;
                         uncompressed = Path.Combine(cPath.Uncompressed);
-                        filter = cLauncher.cUpdate.Filter.ToObject<List<string>>();
                     }
                 }
                 else
@@ -488,7 +492,6 @@ namespace GCinemaCraft
                         dialog = Path.Combine(cPath.Dialog, (string)cLauncher.cMod.Path);
                         link = (string)cLauncher.cMod.Link;
                         uncompressed = Path.Combine(cPath.Uncompressed, (string)cLauncher.cMod.Path);
-                        filter = cLauncher.cMod.cUpdate.Filter.ToObject<List<string>>();
                         type = cLauncher.cMod.Type;
                     }
                 }
@@ -502,9 +505,9 @@ namespace GCinemaCraft
                     {
                         if (!this.downloadFile(link, downloadedFile))
                         {
-                            lblConsole.Text = fileName + " - Uncompressing";
+                            lblConsole.Text = fileName;
                             lblConsole.Refresh();
-                            this.handleXDelta(downloadedFile, true);
+                            this.handleXDelta(downloadedFile, true, fileName);
                             cOperation.Type = 3;
                             handlerOperation();
                             return;
@@ -573,12 +576,23 @@ namespace GCinemaCraft
                 stopOperations(e.ToString());
             }
         }
-
+        private long getSize(ArrayList list)
+        {
+            long size = 0;
+            foreach (JObject obj in list)
+            {
+                size = size + (long)obj["size"];
+            }
+            return size;
+        }
+        static bool oldXDelta = false;
         static System.Security.Cryptography.MD5 hasher = System.Security.Cryptography.MD5.Create();
-        private void handleXDelta(string manifestPath, bool update)
+        private void handleXDelta(string manifestPath, bool update, string oldmanifestPath)
         {
             shouldShowDownloadComplted = false;
             xDeltaBar.Visible = true;
+            progressBar.Visible = true;
+            lblConsole.Visible = true;
             xhashDownloadList = new ArrayList();
             xhashToDelete = new ArrayList();
             using (FileStream fs = File.Open(manifestPath, FileMode.Open))
@@ -586,7 +600,13 @@ namespace GCinemaCraft
             {
                 JObject obj = JObject.Parse(sw.ReadToEnd());
                 JObject oldManifest = new JObject();
-                string str1 = Path.Combine(cPath.Dialog, (string)cLauncher.cMod.Path, "manifest.json");
+                string oldManifestRecovery = Path.Combine(cPath.Dialog, (string)cLauncher.cMod.Path, "manifest.json");
+                string str1 = Path.Combine(cPath.Dialog, (string)cLauncher.cMod.Path, oldmanifestPath);
+                if (File.Exists(oldManifestRecovery))
+                {
+                    File.Move(oldManifestRecovery, str1);
+                }
+
                 if (File.Exists(str1))
                 {
                     using (FileStream fs2 = File.Open(str1, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -672,13 +692,23 @@ namespace GCinemaCraft
 
                         if (good)
                         {
+                            if (t.Value["size"] == null)
+                            {
+                                oldXDelta = true;
+                            }
                             xhashDownloadList.Add(t.Value);
                         }
 
                     }
                 }
-                xhashCount = xhashDownloadList.Count;
-                
+                if (oldXDelta)
+                {
+                    xhashCount = xhashDownloadList.Count;
+                }
+                else
+                {
+                    xhashCount = getSize(xhashDownloadList);
+                }  
             }
         }
         private void deleteXDelta()
@@ -696,15 +726,24 @@ namespace GCinemaCraft
             if (xhashDownloadList.Count == 0)
             {
                 string downloadedFileName = Path.Combine(cPath.Downloaded, (string)cLauncher.cMod.FileName);
-                string str1 = Path.Combine(cPath.Dialog, (string)cLauncher.cMod.Path, "manifest.json");
+                string str1 = Path.Combine(cPath.Dialog, (string)cLauncher.cMod.Path, (string)cLauncher.cMod.FileName);
                 File.Copy(downloadedFileName, str1, true);
                 stopOperations("Pack Updated!");
                 return;
             }
-            float waffle = ((xhashCount - xhashDownloadList.Count) / (float)xhashCount);
-            xDeltaBar.Value = (int)(waffle * 100);
+            if (oldXDelta)
+            {
+                float waffle = ((xhashCount - xhashDownloadList.Count) / (float)xhashCount);
+                xDeltaBar.Value = (int)(waffle * 100);
+            }
+            else
+            {
+                updateXDelta(0);
+            }
+
             JObject obj = (JObject)xhashDownloadList[0];
             xhashDownloadList.RemoveAt(0);
+            
             string outputStr = Path.Combine(cPath.Dialog, (string)cLauncher.cMod.Path, (string)obj["path"]);
             if (File.Exists(outputStr + ".bz2"))
             {
@@ -712,7 +751,11 @@ namespace GCinemaCraft
             }
             string[] c = outputStr.Split('/');
             string outputDir2 = outputStr.Substring(0, outputStr.Length - c[c.Length - 1].Length);
-            Directory.CreateDirectory(outputDir2);
+            if (!String.IsNullOrEmpty(outputDir2))
+            {
+                Directory.CreateDirectory(outputDir2);
+            }
+
             string url = (string)obj["url"];
             //Label label = (Label)this.getControl((Control)this.lblConsole);
             //label.Text = (string)obj["path"] + " - Downloading";
@@ -740,17 +783,52 @@ namespace GCinemaCraft
 
 
         }
+        string goodFileSize(long length)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB" };
+            double len = length;
+            int order = 0;
+            while (len >= 1024 && ++order < sizes.Length)
+            {
+                len = len / 1024;
+            }
+
+            // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
+            // show a single decimal place, and no space.
+            string result = String.Format("{0:0.##} {1}", len, sizes[order]);
+
+            return result;
+        }
+        void updateXDelta(long recieved)
+        {
+            long sizeDone = getSize(xhashDownloadList);
+            long sizeLeft = (this.xhashCount - sizeDone) - recieved;
+            float waffle = (sizeLeft / (float)this.xhashCount);
+            xDeltaBar.Value = Math.Max(Math.Min((int)(waffle * 100), 100), 0);
+            xDeltaBar.CustomText = String.Format("{0}% - {1} / {2}", xDeltaBar.Value.ToString(), goodFileSize(sizeLeft), goodFileSize(this.xhashCount));
+            xDeltaBar.Invalidate();
+        }
         void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e, string file)
         {
             //throw new NotImplementedException();
             Label lblConsole = (Label)getControl(this.lblConsole);
-            Label lblProgress = (Label)getControl(this.fileProgresText);
-            ProgressBar prgWeb = (ProgressBar)getControl(this.prgWeb);
-
-            lblConsole.Text = file;
-            lblProgress.Text = string.Format("{0} MB / {1} MB", (e.BytesReceived / 1024d / 1024d).ToString("0.00"), (e.TotalBytesToReceive / 1024d / 1024d).ToString("0.00")) +
-                string.Format(" - {0} MB/s", (e.BytesReceived / 1024d / 1024d / sw.Elapsed.TotalSeconds).ToString("0.00"));
-            prgWeb.Value = e.ProgressPercentage;
+            ProgressBar2 progressBar = (ProgressBar2)getControl(this.progressBar);
+            ProgressBar2 xDeltaBar = (ProgressBar2)getControl(this.xDeltaBar);
+            string newText = file;
+            if (file.Length > 70) newText = "..." + file.Substring(file.Length - 69);
+           
+            lblConsole.Text = newText;
+            progressBar.Value = e.ProgressPercentage;
+            progressBar.CustomText = string.Format("{0}% - {1} / {2} - {3}/s", e.ProgressPercentage, 
+                goodFileSize(e.BytesReceived), 
+                goodFileSize(e.TotalBytesToReceive),
+                goodFileSize((long)(e.BytesReceived / sw.Elapsed.TotalSeconds)));
+            progressBar.Invalidate();
+            if(!oldXDelta && this.xhashCount != 0)
+            {
+                updateXDelta(e.TotalBytesToReceive - e.BytesReceived);
+            }
+            
         }
         void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e, string path)
         {
@@ -759,10 +837,10 @@ namespace GCinemaCraft
 
             if (e.Cancelled)
             {
-                if (cbFailedDownload.Checked)
+                /*if (cbFailedDownload.Checked)
                 {
                     File.Delete(path);
-                }
+                }*/
                 
                 stopOperations("Download has been cancelled");
             }
@@ -883,8 +961,14 @@ namespace GCinemaCraft
 
         private void cblMod_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            CheckedListBox cblMod = (CheckedListBox)getControl(this.cblMod);
+
+            
             CheckBox cbMod = (CheckBox)getControl(this.cbMod);
+            CheckedListBox cblMod = (CheckedListBox)getControl(this.cblMod);
+            if (cblMod.CheckedItems.Count > 0 && e.NewValue == CheckState.Checked)
+            {
+                cblMod.SetItemChecked(cblMod.CheckedIndices[0], false);
+            }
             int cblMod_Items_Count = cblMod.Items.Count;
             int cblMod_CheckedItems_Count = cblMod.CheckedItems.Count;
 

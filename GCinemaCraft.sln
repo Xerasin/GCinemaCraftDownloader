@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GCinemaCraft", "GCinemaCraft\GCinemaCraft.csproj", "{D0F6CF0E-23DC-45E6-8C5F-B1FA21F57AC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCinemaBuildManifest", "MineCinemaBuildManifest\MineCinemaBuildManifest\MineCinemaBuildManifest.csproj", "{8E7DE460-AE81-4185-BF3D-1B2F760B90FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D0F6CF0E-23DC-45E6-8C5F-B1FA21F57AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0F6CF0E-23DC-45E6-8C5F-B1FA21F57AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0F6CF0E-23DC-45E6-8C5F-B1FA21F57AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E7DE460-AE81-4185-BF3D-1B2F760B90FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E7DE460-AE81-4185-BF3D-1B2F760B90FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E7DE460-AE81-4185-BF3D-1B2F760B90FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E7DE460-AE81-4185-BF3D-1B2F760B90FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
